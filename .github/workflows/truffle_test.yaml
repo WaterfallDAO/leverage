@@ -1,0 +1,28 @@
+name: truffle test
+
+on: [push]
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Cache Compiler Installations
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.solcx
+          ~/.vvm
+        key: compiler-cache
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+
+    - name: test
+      run: |
+        npm install -g truffle@5.1.14
+        npm install -g yarn
+        yarn install
+        truffle test -s

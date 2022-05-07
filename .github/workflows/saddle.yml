@@ -1,0 +1,38 @@
+name: Saddle
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Cache Compiler Installations
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.solcx
+            ~/.vvm
+          key: compiler-cache
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+
+      - name: restore yarn
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            */*/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: test
+        run: |
+          sudo wget https://github.com/ethereum/solidity/releases/download/v0.5.16/solc-static-linux -O /bin/solc
+          sudo chmod +x /bin/solc
+          npm install -g truffle@5.1.14
+          npm install -g yarn
+          yarn install
+          npx saddle compile
+          npx saddle test
